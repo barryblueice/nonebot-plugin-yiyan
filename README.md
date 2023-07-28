@@ -1,4 +1,4 @@
-# nonebot-plugin-wenxinyiyan
+# nonebot-plugin-yiyan
 
 _百度文心一言对话平台_
 
