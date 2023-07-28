@@ -61,7 +61,6 @@ def append_to_json_file(file_path, data):
 @wx.handle()
 async def process(bot: Bot, event: MessageEvent):
     if not os.path.exists(history_path.rstrip('/')):
-        # 文件夹不存在，创建新文件夹
         os.makedirs(history_path.rstrip('/'))
     user_id = str(event.user_id)
     wx_ram = str(event.get_message()).strip()
@@ -83,7 +82,6 @@ async def process(bot: Bot, event: MessageEvent):
 
     if content_count >= history_num:
         with open(f'{history_path+user_id}.json', 'w') as file:
-            # 将空的JSON数据写入文件
             json.dump(start, file)
 
     
