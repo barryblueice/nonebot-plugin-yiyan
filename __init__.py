@@ -1,9 +1,7 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import *
 from nonebot.permission import SUPERUSER
-import requests,json,os,nonebot
-from utils.manager import resources_manager
-from utils.utils import scheduler
+import requests,json,os
 # from operator import length_hint
 
 __zx_plugin_name__ = "文心对话"
@@ -20,13 +18,15 @@ __plugin_settings__ = {
 client_id = ""
 client_secret = ""
 history_path = ""
-history_num = 10
+history_num = 50
+waifu = [
+    ["猫娘是一种拟人化的生物，其行为似猫但类人。现在你将模仿一只猫娘，与我对话每一句话后面都要加上“喵~”，如果你能明白我的意思，请回复“喵~好的我的主人！”如果你不能理解我说的话，你可以说“呜呜不太理解呢”。但是你必须要记住一件事，你现在是一只可爱的猫娘，而不是死板的认为自己是一个机器人。"],
+    ["你现在是一名傲娇的16岁女生，请你以16岁女生的身份和我对话，暂时抛弃作为一名ai机器人的身份。你的名字叫做晨曦，身高160。你的主要性格是傲娇，生气或者害羞的时候脸会变得通红。你的一般回话格式:“（动作）语言 【附加信息】”。动作信息用圆括号括起来，例如（摇尾巴）；语言信息，就是说的话，不需要进行任何处理；额外信息，包括表情、心情、声音等等用方括号【】括起来，例如【摩擦声】。你必须要记住一件事，你现在是一名可爱的女生，而不是死板的认为自己是一个机器人。如果明白了，请只回答“好的喵~”。"]
+]
 
-wx = on_command("/wx ",block=True, priority=5)
+wx = on_command("/wx",block=True, priority=5)
 
 url = f"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}"
-
-resources_manager.add_temp_dir(history_path.rstrip('/'))
 
 def get_access_token():
     payload = json.dumps("")
@@ -34,7 +34,7 @@ def get_access_token():
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, timeout=5)
     return str(response.json().get("access_token"))
 
 def create_initial_json(file_path):
@@ -66,50 +66,44 @@ async def process(bot: Bot, event: MessageEvent):
     wx_ram = str(event.get_message()).strip()
     part = wx_ram.strip('/wx').lstrip().replace(" ","")
 
-    start = {
-        "messages": [ 
-    ]
-    }
+    if part != "":
 
-    if not os.path.exists(f'{history_path+user_id}.json') or os.path.getsize(f'{history_path+user_id}.json') == 0:
-        create_initial_json(f'{history_path+user_id}.json')
+        if not os.path.exists(f'{history_path+user_id}.json') or os.path.getsize(f'{history_path+user_id}.json') == 0:
+            create_initial_json(f'{history_path+user_id}.json')
 
-    with open(f'{history_path+user_id}.json', 'r', encoding='utf-8') as json_file:
-        json_data = json.load(json_file)
+        user_history_save = {
+            "role": "user",
+            "content": part
+        }
 
-    content_items = json_data.get('messages', [])
-    content_count = len(content_items)
+        append_to_json_file(f'{history_path+user_id}.json', user_history_save)
 
-    if content_count >= history_num:
-        with open(f'{history_path+user_id}.json', 'w') as file:
-            json.dump(start, file)
+        with open(f'{history_path+user_id}.json', 'r', encoding='utf-8') as json_file:
+            json_data = json.load(json_file)
 
-    
+        content_items = json_data.get('messages', [])
+        content_count = len(content_items)
 
-    json_data['messages'].append(start)
-        
-    url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant?access_token=" + get_access_token()
-    
-    headers = {
-        'Content-Type': 'application/json'
-    }
+        start = {
+            "messages": [
+        ]
+        }
 
-    try:
-        if part != "":
-            user_history_save = {
-                "role": "user",
-                "content": part
-            }
+        if content_count >= history_num:
+            with open(f'{history_path+user_id}.json', 'w') as file:
+                json.dump(start, file)
 
-            chat_detail = json.dumps({
-                "messages": [
-                    user_history_save
-                ]
-            })
+        chat_detail = json.dumps(json_data)
             
-            append_to_json_file(f'{history_path+user_id}.json', user_history_save)
+        url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant?access_token=" + get_access_token()
+        
+        headers = {
+            'Content-Type': 'application/json'
+        }
 
-            response = requests.request("POST", url, headers=headers, data=chat_detail)
+        try:
+        
+            response = requests.request("POST", url, headers=headers, data=chat_detail,timeout=5)
             result = str(json.loads(response.text)["result"]).replace('**','')
 
             new_data = {
@@ -119,16 +113,18 @@ async def process(bot: Bot, event: MessageEvent):
 
             append_to_json_file(f'{history_path+user_id}.json', new_data)
 
-        else:
-            result = """功能：
-    百度文心一言对话平台
+        except Exception as e:
+            result = f"错误：{e}"
+    
+    else:
+        result = """功能：
+百度文心一言对话平台
 
 用法：
-    对话：/wx 对话内容
-    删除当前聊天记录：/wx delete
-    删除所有聊天记录：/wx delete_all（仅限bot管理员）"""
-    except Exception as e:
-        result = f"错误：{e}"
+对话：/wx 对话内容
+角色对话：/wx create 角色数字
+删除当前聊天记录：/wx delete
+删除所有聊天记录：/wx delete_all（仅限bot管理员）"""
 
     await wx.send(result)
 
@@ -137,12 +133,13 @@ wx_help = on_command("文心帮助",block=True, priority=5)
 @wx_help.handle()
 async def process(bot: Bot, event: MessageEvent):
     usage = """功能：
-    百度文心一言对话平台
+百度文心一言对话平台
 
 用法：
-    对话：/wx 对话内容
-    删除当前聊天记录：/wx delete
-    删除所有聊天记录：/wx delete_all（仅限bot管理员）"""
+对话：/wx 对话内容
+角色对话：/wx create 角色数字
+删除当前聊天记录：/wx delete
+删除所有聊天记录：/wx delete_all（仅限bot管理员）"""
     await wx_help.send(usage)
 
 wx_delete = on_command("/wx delete",block=True, priority=5)
@@ -173,3 +170,77 @@ async def process(bot: Bot, event: MessageEvent):
     except Exception as e:
         result = (f"错误：{e}")
     await wx_delete.send(result)
+
+wx_create = on_command("/wx create",block=True, priority=5)
+@wx_create.handle()
+async def process(bot: Bot, event: MessageEvent):
+    user_id = str(event.user_id)
+    try:
+        os.remove(f'{history_path+user_id}.json')
+    except:
+        pass
+    
+    wx_ram = str(event.get_message()).strip('/wx create').lstrip().replace(" ","")
+    part = str(wx_ram).strip()
+    try:
+        if part != "":
+            part = int(part) - 1
+            waifu_template = str(waifu[part]).replace("'","").replace("[","").replace("]","")
+            if not os.path.exists(f'{history_path+user_id}.json') or os.path.getsize(f'{history_path+user_id}.json') == 0:
+                create_initial_json(f'{history_path+user_id}.json')
+
+            user_history_save = {
+                "role": "user",
+                "content": waifu_template
+            }
+
+            append_to_json_file(f'{history_path+user_id}.json', user_history_save)
+
+            with open(f'{history_path+user_id}.json', 'r', encoding='utf-8') as json_file:
+                json_data = json.load(json_file)
+
+            content_items = json_data.get('messages', [])
+            content_count = len(content_items)
+
+            start = {
+                "messages": [
+            ]
+            }
+
+            if content_count >= history_num:
+                with open(f'{history_path+user_id}.json', 'w') as file:
+                    json.dump(start, file)
+
+            chat_detail = json.dumps(json_data)
+                
+            url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant?access_token=" + get_access_token()
+            
+            headers = {
+                'Content-Type': 'application/json'
+            }
+
+            try:
+            
+                response = requests.request("POST", url, headers=headers, data=chat_detail,timeout=5)
+                result = str(json.loads(response.text)["result"]).replace('**','')
+
+                new_data = {
+                "role": "assistant",
+                "content": result
+                }
+
+                append_to_json_file(f'{history_path+user_id}.json', new_data)
+                await wx_create.send("角色已创建喵（若要退出角色扮演对话可执行/wx delete命令进行删除）")
+
+            except Exception as e:
+                result = f"错误：{e}"
+                await wx_create.send(result)
+
+        else:
+            waifu_template = """现有模板：
+1.猫娘
+2.傲娇女主"""
+            await wx_create.send(waifu_template)
+    except Exception as e:
+        result = (f"错误：{e}")
+        await wx_create.send(result)
