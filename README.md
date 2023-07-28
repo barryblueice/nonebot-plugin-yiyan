@@ -20,10 +20,4 @@ _百度文心一言对话平台_
 ```
 
 ### 配置：
-1.去[百度文心一言网站](https://yiyan.baidu.com)获取内测资格；</br>
-2.申请[文心大模型](https://cloud.baidu.com/survey/qianfan.html)；</br>
-3.申请成功后进入[文心千帆控制台](https://ai.baidu.com/wenxinworkshop/app/overview)，点击“直接使用”中的“去使用”按钮，按照引导步骤开通api；</br>
-4.开通之后进入百度智能云控制台的[文心千帆应用列表](https://console.bce.baidu.com/ai/#/ai/wenxinworkshop/app/list)，点击创建应用。默认ERNIE-Bot-turbo等服务是自动勾选的，你只需配置应用名称、类型和描述，然后点击“立即创建”；</br>
-5.创建完成后查看应用详情，记下API Key和Secret Key；</br>
-6.打开__init__.py，分别在在client_id和client_secret中填入你的API Key和Secret Key；</br>
-7.重启机器人。
+[点击此处查看配置教程](https://github.com/barryblueice/nonebot_yiyan/wiki/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE%E6%9C%BA%E5%99%A8%E4%BA%BA)
