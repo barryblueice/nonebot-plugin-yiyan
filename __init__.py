@@ -67,7 +67,6 @@ async def process(bot: Bot, event: MessageEvent):
     part = wx_ram.strip('/wx').lstrip().replace(" ","")
 
     if part != "":
-
         if not os.path.exists(f'{history_path+user_id}.json') or os.path.getsize(f'{history_path+user_id}.json') == 0:
             create_initial_json(f'{history_path+user_id}.json')
 
@@ -175,15 +174,16 @@ wx_create = on_command("/wx create",block=True, priority=5)
 @wx_create.handle()
 async def process(bot: Bot, event: MessageEvent):
     user_id = str(event.user_id)
-    try:
-        os.remove(f'{history_path+user_id}.json')
-    except:
-        pass
+
     
     wx_ram = str(event.get_message()).strip('/wx create').lstrip().replace(" ","")
     part = str(wx_ram).strip()
     try:
         if part != "":
+            try:
+                os.remove(f'{history_path+user_id}.json')
+            except:
+                pass
             part = int(part) - 1
             waifu_template = str(waifu[part]).replace("'","").replace("[","").replace("]","")
             if not os.path.exists(f'{history_path+user_id}.json') or os.path.getsize(f'{history_path+user_id}.json') == 0:
