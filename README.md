@@ -27,28 +27,28 @@ _百度文心一言对话平台_
     <td>client_id</td>
     <td>API Key</td>
     <td>/</td>
-    <td>/</td>
+    <td>client_id = "xxxxxxxxxxxxx"</td>
   </tr>
   <tr>
     <td>client_secret</td>
     <td>Secret Key</td>
     <td>/</td>
-    <td>/</td>
+    <td>client_secret = "xxxxxxxxxxxxx"</td>
   </tr>
   <tr>
     <td>history_path</td>
     <td>消息记录存放路径（绝对路径）</td>
     <td>/</td>
-    <td>/home/history/</td>
+    <td>history_path = "/home/history/"</td>
   </tr>
   <tr>
     <td>history_num</td>
     <td>最大消息记录保存数量</td>
     <td>50</td>
-    <td>50</td>
+    <td>history_num = 50</td>
   </tr>
   <tr>
-    <td>history_numh</td>
+    <td>waifu</td>
     <td>角色扮演模板</td>
     <td>角色扮演模板。若要添加新模板则需要同时修改wx_create模块中的相关内容</td>
     <td>1.猫娘</br>2.傲娇女主</td>
