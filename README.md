@@ -10,6 +10,7 @@ _百度文心一言对话平台_
 ### 可用功能:
 + [x] 调用文心一言数据模型进行对话；
 + [x] 多轮对话；
++ [x] 角色扮演；
 
 ### 安装：
 下载本插件后丢到plugin文件夹里（但凡是个人都知道怎么装）。
@@ -41,10 +42,16 @@ _百度文心一言对话平台_
     <td>/home/history/</td>
   </tr>
   <tr>
-    <td>history_numh</td>
+    <td>history_num</td>
     <td>最大消息记录保存数量</td>
-    <td>10</td>
-    <td>10</td>
+    <td>50</td>
+    <td>50</td>
+  </tr>
+  <tr>
+    <td>history_numh</td>
+    <td>角色扮演模板</td>
+    <td>角色扮演模板。若要添加新模板则需要同时修改wx_create模块中的相关内容</td>
+    <td>1.猫娘</br>2.傲娇女主</td>
   </tr>
 </table>
 
