@@ -173,11 +173,3 @@ async def process(bot: Bot, event: MessageEvent):
     except Exception as e:
         result = (f"错误：{e}")
     await wx_delete.send(result)
-
-@nonebot.scheduler.scheduled_job('interval', minute='5')
-async def _():
-    file_list = os.listdir(history_path)
-    for filename in file_list:
-        file_path = os.path.join(history_path,filename)
-        if filename.endswith('.json') and os.path.isfile(file_path):
-            os.remove(file_path)
