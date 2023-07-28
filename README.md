@@ -14,9 +14,45 @@ _百度文心一言对话平台_
 ### 安装：
 下载本插件后丢到plugin文件夹里（但凡是个人都知道怎么装）。
 
+### 参数：
+<table>
+  <tr>
+    <th>参数名称</th>
+    <th>参数说明</th>
+    <th>默认值</th>
+    <th>范例</th>
+  </tr>
+  <tr>
+    <td>client_id</td>
+    <td>API Key</td>
+    <td>/</td>
+    <td>/</td>
+  </tr>
+  <tr>
+    <td>client_secret</td>
+    <td>Secret Key</td>
+    <td>/</td>
+    <td>/</td>
+  </tr>
+  <tr>
+    <td>history_path</td>
+    <td>消息记录存放路径（绝对路径）</td>
+    <td>/</td>
+    <td>/home/history/</td>
+  </tr>
+  <tr>
+    <td>history_numh</td>
+    <td>最大消息记录保存数量</td>
+    <td>10</td>
+    <td>10</td>
+  </tr>
+</table>
+
 ### 使用方法：
 ```bash
-/wx 聊天内容
+对话：/wx 对话内容
+删除当前账号聊天记录：/wx delete
+删除所有账号聊天记录：/wx delete_all（仅限bot管理员）
 ```
 
 ### 配置：
