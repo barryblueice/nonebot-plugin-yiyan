@@ -35,7 +35,7 @@ def get_access_token():
         'Accept': 'application/json'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
-    return response.json().get("access_token")
+    return str(response.json().get("access_token"))
 
 def create_initial_json(file_path):
     initial_data = {"messages": []}
