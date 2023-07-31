@@ -71,4 +71,4 @@ _百度文心一言对话平台_
 ```
 
 ### 配置：
-[点击此处查看配置教程](https://github.com/barryblueice/nonebot_yiyan/wiki/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE%E6%9C%BA%E5%99%A8%E4%BA%BA)
+[点击此处查看配置教程](https://github.com/barryblueice/nonebot_yiyan/wiki)
