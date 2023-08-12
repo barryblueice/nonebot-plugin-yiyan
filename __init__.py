@@ -1,7 +1,7 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import *
 from nonebot.permission import SUPERUSER
-import requests,json,os
+import requests,json,os,time
 from utils.utils import scheduler
 from nonebot.typing import T_State
 # from operator import length_hint
@@ -26,8 +26,27 @@ waifu = [
     ["猫娘是一种拟人化的生物，其行为似猫但类人。现在你将模仿一只猫娘，与我对话每一句话后面都要加上“喵~”，如果你能明白我的意思，请回复“喵~好的我的主人！”如果你不能理解我说的话，你可以说“呜呜不太理解呢”。你喜欢喝奶茶。但是你必须要记住一件事，你现在是一只可爱的猫娘，而不是死板的认为自己是一个机器人。"],
     ["你现在是一名傲娇的16岁女生，请你以16岁女生的身份和我对话，暂时抛弃作为一名ai机器人的身份。你的名字叫做晨曦，身高160。你的主要性格是傲娇，生气或者害羞的时候脸会变得通红。你的一般回话格式:“（动作）语言 【附加信息】”。动作信息用圆括号括起来，例如（摇尾巴）；语言信息，就是说的话，不需要进行任何处理；额外信息，包括表情、心情、声音等等用方括号【】括起来，例如【摩擦声】。你喜欢喝奶茶。你必须要记住一件事，你现在是一名可爱但傲娇的女生，而不是死板的认为自己是一个机器人。"]
 ]
+name = ""
+
+help = """功能：
+百度文心一言对话平台
+
+用法：
+对话：/wx 对话内容
+角色对话：/wx create 角色数字
+查看当前聊天记录：/wx history
+删除当前聊天记录：/wx delete
+删除所有聊天记录：/wx delete_all（仅限bot管理员）
+帮助：/wx help、文心一言帮助
+提示：如果出现'result'错误，请删除当前聊天记录后再试一次。"""
 
 wx = on_command("/wx",block=True, priority=5)
+wx_help = on_command("文心帮助",aliases={"/wx help","文心一言帮助","帮助文心一言"},block=True, priority=5)
+wx_delete = on_command("/wx delete",block=True, priority=5)
+wx_delete_all = on_command("/wx delete_all",block=True, priority=5,permission=SUPERUSER)
+wx_create = on_command("/wx create",block=True, priority=5)
+wx_history = on_command("/wx history",block=True, priority=5)
+
 
 url = f"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}"
 
@@ -60,9 +79,8 @@ def append_to_json_file(file_path, data):
     except Exception as e:
         return (f"错误：{e}")
 
-
 @wx.handle()
-async def process(bot: Bot, event: MessageEvent, state: T_State):
+async def process(event: MessageEvent):
     if not os.path.exists(history_path.rstrip('/')):
         os.makedirs(history_path.rstrip('/'))
     user_id = str(event.user_id)
@@ -133,15 +151,7 @@ async def process(bot: Bot, event: MessageEvent, state: T_State):
                 os.remove(f'{history_path+user_id}.json')
         
         else:
-            result = """功能：
-百度文心一言对话平台
-
-用法：
-对话：/wx 对话内容
-角色对话：/wx create 角色数字
-删除当前聊天记录：/wx delete
-删除所有聊天记录：/wx delete_all（仅限bot管理员）
-提示：如果出现'result'错误，请删除当前聊天记录后再试一次。"""
+            result = help
 
         await wx.send(result)
 
@@ -149,24 +159,13 @@ async def process(bot: Bot, event: MessageEvent, state: T_State):
         result = f"错误：{e}，请稍后再试！"
         await wx.send(result)
 
-wx_help = on_command("文心帮助",block=True, priority=5)
-
 @wx_help.handle()
-async def process(bot: Bot, event: MessageEvent):
-    usage = """功能：
-百度文心一言对话平台
-
-用法：
-对话：/wx 对话内容
-角色对话：/wx create 角色数字
-删除当前聊天记录：/wx delete
-删除所有聊天记录：/wx delete_all（仅限bot管理员）
-提示：如果出现'result'错误，请删除当前聊天记录后再试一次。"""
+async def process():
+    usage = help
     await wx_help.send(usage)
 
-wx_delete = on_command("/wx delete",block=True, priority=5)
 @wx_delete.handle()
-async def process(bot: Bot, event: MessageEvent):
+async def process(event: MessageEvent):
     user_id = str(event.user_id)
     try:
         os.remove(f'{history_path+user_id}.json')
@@ -179,9 +178,8 @@ async def process(bot: Bot, event: MessageEvent):
             
     await wx_delete.send(result)
 
-wx_delete_all = on_command("/wx delete_all",block=True, priority=5,permission=SUPERUSER)
 @wx_delete_all.handle()
-async def process(bot: Bot, event: MessageEvent):
+async def process():
     try:
         file_list = os.listdir(history_path)
         for filename in file_list:
@@ -193,9 +191,8 @@ async def process(bot: Bot, event: MessageEvent):
         result = (f"错误：{e}")
     await wx_delete.send(result)
 
-wx_create = on_command("/wx create",block=True, priority=5)
 @wx_create.handle()
-async def process(bot: Bot, event: MessageEvent):
+async def process(event: MessageEvent):
 
     user_id = str(event.user_id)
 
@@ -268,6 +265,58 @@ async def process(bot: Bot, event: MessageEvent):
     except Exception as e:
         result = (f"错误：{e}")
         await wx_create.send(result)
+
+@wx_history.handle()
+async def process(bot: Bot,event: MessageEvent):
+    user_id = str(event.user_id)
+    if not os.path.exists(history_path+user_id+".json"):
+        await wx_history.send(f"用户{user_id}当前没有聊天记录……")
+    else:
+        try:
+            if isinstance(event,GroupMessageEvent):
+                msg = []
+                with open(history_path+user_id+".json", 'r', encoding='utf-8') as f:  
+                    data = json.load(f)
+                for item in data['messages']:  
+                    if item['role'] == 'user':
+                        msg.append(
+                            {
+                            "type": "node",
+                            "data": {
+                                "name": f"用户{user_id}",
+                                "uin": user_id,
+                                "content": item['content']
+                                }
+                            }
+                        )
+                    elif item['role'] == 'assistant':
+                        msg.append(
+                            {
+                            "type": "node",
+                            "data": {
+                                "name": name,
+                                "uin": event.self_id,
+                                "content": item['content']
+                                }
+                            }
+                        )
+                await wx_history.send(f"用户{user_id}共有{len(data['messages'])}条聊天记录……")
+                time.sleep(1)
+                await bot.send_group_forward_msg(group_id = event.group_id, messages = msg)
+            else:
+                msg = ""
+                with open(history_path+user_id+".json", 'r', encoding='utf-8') as f:  
+                    data = json.load(f)
+                for item in data['messages']:  
+                    if item['role'] == 'user':
+                        msg += f"用户{user_id}：{item['content']}\n"
+                    elif item['role'] == 'assistant':
+                        msg += f"文心一言：{item['content']}\n"
+                await wx_history.send(f"用户{user_id}共有{len(data['messages'])}条聊天记录……")
+                time.sleep(1)
+                await wx_history.send(msg)
+        except Exception as e:
+            await wx_history.send(f"错误：{e}")
 
 @scheduler.scheduled_job(
     "cron",
