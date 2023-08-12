@@ -47,11 +47,17 @@ _百度文心一言对话平台_
     <td>50</td>
     <td>history_num = 50</td>
   </tr>
-   <tr>
+  <tr>
     <td>history_clear_time</td>
     <td>消息记录保留时间，以分钟为单位，时间一到就会自动清除消息记录</td>
     <td>5</td>
     <td>history_clear_time = 5</td>
+  </tr>
+  <tr>
+    <td>name</td>
+    <td>机器人名称</td>
+    <td>/</td>
+    <td>name = "qqbot"</td>
   </tr>
 
   <tr>
