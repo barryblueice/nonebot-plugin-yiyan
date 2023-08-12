@@ -47,7 +47,6 @@ wx_delete_all = on_command("/wx delete_all",block=True, priority=5,permission=SU
 wx_create = on_command("/wx create",block=True, priority=5)
 wx_history = on_command("/wx history",block=True, priority=5)
 
-
 url = f"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}"
 
 def get_access_token():
