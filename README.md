@@ -66,8 +66,10 @@ _百度文心一言对话平台_
 ```bash
 对话：/wx 对话内容
 角色对话：/wx create 角色数字
+查看当前聊天记录：/wx history
 删除当前聊天记录：/wx delete
 删除所有聊天记录：/wx delete_all（仅限bot管理员）
+帮助：/wx help、文心一言帮助
 ```
 
 ### 配置：
