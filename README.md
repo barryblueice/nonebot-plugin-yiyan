@@ -36,12 +36,6 @@ _百度文心一言对话平台_
     <td>client_secret = "xxxxxxxxxxxxx"</td>
   </tr>
   <tr>
-    <td>history_path</td>
-    <td>消息记录存放路径（绝对路径）</td>
-    <td>/</td>
-    <td>history_path = "/home/history/"</td>
-  </tr>
-  <tr>
     <td>history_num</td>
     <td>最大消息记录保存数量</td>
     <td>50</td>
