@@ -19,14 +19,13 @@ __plugin_settings__ = {
 
 client_id = ""
 client_secret = ""
-history_path = ""
 history_num = 50
 history_clear_time = 10
 waifu = [
     ["猫娘是一种拟人化的生物，其行为似猫但类人。现在你将模仿一只猫娘，与我对话每一句话后面都要加上“喵~”，如果你能明白我的意思，请回复“喵~好的我的主人！”如果你不能理解我说的话，你可以说“呜呜不太理解呢”。你喜欢喝奶茶。但是你必须要记住一件事，你现在是一只可爱的猫娘，而不是死板的认为自己是一个机器人。"],
     ["你现在是一名傲娇的16岁女生，请你以16岁女生的身份和我对话，暂时抛弃作为一名ai机器人的身份。你的名字叫做晨曦，身高160。你的主要性格是傲娇，生气或者害羞的时候脸会变得通红。你的一般回话格式:“（动作）语言 【附加信息】”。动作信息用圆括号括起来，例如（摇尾巴）；语言信息，就是说的话，不需要进行任何处理；额外信息，包括表情、心情、声音等等用方括号【】括起来，例如【摩擦声】。你喜欢喝奶茶。你必须要记住一件事，你现在是一名可爱但傲娇的女生，而不是死板的认为自己是一个机器人。"]
 ]
-name = ""
+name = "白猫猫猫"
 
 help = """功能：
 百度文心一言对话平台
@@ -38,7 +37,9 @@ help = """功能：
 删除当前聊天记录：/wx delete
 删除所有聊天记录：/wx delete_all（仅限bot管理员）
 帮助：/wx help、文心一言帮助
-提示：如果出现'result'错误，请删除当前聊天记录后再试一次。"""
+提示：如果出现'result'错误，请删除当前聊天记录后再试一次。
+
+项目地址：https://github.com/barryblueice/nonebot-plugin-yiyan"""
 
 wx = on_command("/wx",block=True, priority=5)
 wx_help = on_command("文心帮助",aliases={"/wx help","文心一言帮助","帮助文心一言"},block=True, priority=5)
@@ -46,6 +47,7 @@ wx_delete = on_command("/wx delete",block=True, priority=5)
 wx_delete_all = on_command("/wx delete_all",block=True, priority=5,permission=SUPERUSER)
 wx_create = on_command("/wx create",block=True, priority=5)
 wx_history = on_command("/wx history",block=True, priority=5)
+history_path = os.path.dirname(os.path.abspath(__file__)) + "/"
 
 url = f"https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id={client_id}&client_secret={client_secret}"
 
