@@ -3,7 +3,7 @@ from nonebot.adapters.onebot.v11 import *
 from nonebot.permission import SUPERUSER
 import requests,json,os,time
 from nonebot_plugin_apscheduler import scheduler
-from services.log import logger
+from nonebot.typing import T_State
 # from operator import length_hint
 
 __zx_plugin_name__ = "文心对话"
@@ -331,7 +331,6 @@ async def _():
             file_path = os.path.join(history_path,filename)
             if filename.endswith('.json') and os.path.isfile(file_path):
                 os.remove(file_path)
-        logger.info("[nonebot_plugin_yiyan] 清理历史数据完成....")
     except:
         pass
 
@@ -346,6 +345,5 @@ async def _():
             file_path = os.path.join(history_path,filename)
             if filename.endswith('.json') and os.path.isfile(file_path):
                 os.remove(file_path)
-        logger.info("[nonebot_plugin_yiyan] 清理历史数据完成....")
     except:
         pass
